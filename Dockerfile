@@ -38,8 +38,11 @@ RUN playwright install chromium
 # Copy application code
 COPY . .
 
+# Set environment variable to indicate we're in Docker
+ENV DOCKER_ENVIRONMENT=true
+
 # Expose port for Streamlit
 EXPOSE 8501
 
 # Run the app
-CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "web_scraper/app.py", "--server.port=8501", "--server.address=0.0.0.0"]

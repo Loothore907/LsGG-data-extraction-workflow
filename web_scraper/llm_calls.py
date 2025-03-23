@@ -2,8 +2,8 @@
 import litellm
 import json
 from litellm import (completion,token_counter,completion_cost,get_max_tokens,)
-from assets import USER_MESSAGE, MODELS_USED
-from api_management import get_api_key
+from .assets import USER_MESSAGE, MODELS_USED
+from .api_management import get_api_key
 import os
 
 

@@ -3,11 +3,11 @@
 import json
 from typing import List
 from pydantic import BaseModel, create_model
-from assets import (OPENAI_MODEL_FULLNAME,GEMINI_MODEL_FULLNAME,SYSTEM_MESSAGE)
-from llm_calls import (call_llm_model)
-from markdown import read_raw_data
-from api_management import get_supabase_client
-from utils import  generate_unique_name
+from .assets import (OPENAI_MODEL_FULLNAME,GEMINI_MODEL_FULLNAME,SYSTEM_MESSAGE)
+from .llm_calls import (call_llm_model)
+from .markdown import read_raw_data
+from .api_management import get_supabase_client
+from core.utils import generate_unique_name
 
 supabase = get_supabase_client()
 

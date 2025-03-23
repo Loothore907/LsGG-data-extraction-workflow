@@ -2,10 +2,10 @@
 
 import asyncio
 from typing import List
-from api_management import get_supabase_client
-from utils import generate_unique_name
+from .api_management import get_supabase_client
+from core.utils import generate_unique_name
 from crawl4ai import AsyncWebCrawler
-from asyncio_helper import ensure_event_loop
+from .asyncio_helper import ensure_event_loop
 
 supabase = get_supabase_client()
 

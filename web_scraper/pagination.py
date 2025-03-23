@@ -2,13 +2,13 @@
 
 import json
 from typing import List, Dict
-from assets import PROMPT_PAGINATION
-from markdown import read_raw_data
-from api_management import get_supabase_client
+from .assets import PROMPT_PAGINATION
+from .markdown import read_raw_data
+from .api_management import get_supabase_client
 from pydantic import BaseModel, Field
 from typing import List
 from pydantic import create_model
-from llm_calls import (call_llm_model)
+from .llm_calls import (call_llm_model)
 
 supabase = get_supabase_client()
 

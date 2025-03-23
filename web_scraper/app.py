@@ -1,7 +1,17 @@
-# streamlit_app.py
-# Add these lines at the very top of streamlit_app.py
+# app.py
+# Add these lines at the very top of app.py
 import asyncio
 import nest_asyncio
+import sys
+import os
+
+# Add the path adjustment to allow imports from the root directory
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Add the current file's directory to path to ensure we can import from the web_scraper package
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
 
 # Fix for the asyncio event loop error in Streamlit
 try:
@@ -15,28 +25,30 @@ nest_asyncio.apply()
 # Continue with your existing imports and code
 # Now import streamlit and other modules
 import streamlit as st
-import os
-
-# Import your modules last
-# from scraper import scrape_urls - don't change your other imports, just make sure they come after the event loop setup
-
-import streamlit as st
 from streamlit_tags import st_tags_sidebar
 import pandas as pd
 import json
 import re
-import sys
-import asyncio
-import nest_asyncio
 import threading
-# Import our new asyncio helper
-from asyncio_helper import ensure_event_loop
-# ---local imports---
-from scraper import scrape_urls
-from pagination import paginate_urls
-from markdown import fetch_and_store_markdowns
-from assets import MODELS_USED
-from api_management import get_supabase_client
+
+# Use absolute imports to avoid relative import errors in Docker
+# Check if running as script or imported as module
+if __name__ == "__main__" or os.environ.get("DOCKER_ENVIRONMENT", "false") == "true":
+    # When running directly or in Docker, use absolute imports
+    from web_scraper.asyncio_helper import ensure_event_loop
+    from web_scraper.scraper import scrape_urls
+    from web_scraper.pagination import paginate_urls
+    from web_scraper.markdown import fetch_and_store_markdowns
+    from web_scraper.assets import MODELS_USED
+    from web_scraper.api_management import get_supabase_client
+else:
+    # When imported as part of a package, use relative imports
+    from .asyncio_helper import ensure_event_loop
+    from .scraper import scrape_urls
+    from .pagination import paginate_urls
+    from .markdown import fetch_and_store_markdowns
+    from .assets import MODELS_USED
+    from .api_management import get_supabase_client
 
 # Apply the helper function to ensure we have an event loop
 ensure_event_loop()
@@ -409,6 +421,9 @@ if st.session_state['scraping_state'] == 'completed' and st.session_state['resul
                 row_dict = dict(item)  # Shallow copy
                 all_page_rows.append(row_dict)
 
+        # Create an empty DataFrame by default
+        pagination_df = pd.DataFrame(columns=["page_url"])
+        
         # Create DataFrame and display it
         if not all_page_rows:
             st.warning("No page URLs found.")
@@ -428,13 +443,18 @@ if st.session_state['scraping_state'] == 'completed' and st.session_state['resul
             st.sidebar.markdown(f"*Input Tokens:* {st.session_state['in_tokens_p']}")
             st.sidebar.markdown(f"*Output Tokens:* {st.session_state['out_tokens_p']}")
             st.sidebar.markdown(f"**Total Cost:** :blue-background[**${st.session_state['cost_p']:.4f}**]")
-        # Download pagination URLs
-        st.subheader("Download Pagination URLs")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.download_button("Download Pagination CSV",data=pagination_df.to_csv(index=False),file_name="pagination_urls.csv")
-        with col2:
-            st.download_button("Download Pagination JSON",data=json.dumps(all_page_rows, indent=4),file_name="pagination_urls.json")
+        
+        # Only show download buttons if we have pagination data
+        if not all_page_rows:
+            st.warning("No pagination URLs found to download.")
+        else:
+            # Download pagination URLs
+            st.subheader("Download Pagination URLs")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.download_button("Download Pagination CSV",data=pagination_df.to_csv(index=False),file_name="pagination_urls.csv")
+            with col2:
+                st.download_button("Download Pagination JSON",data=json.dumps(all_page_rows, indent=4),file_name="pagination_urls.json")
     # Reset scraping state
     if st.sidebar.button("Clear Results"):
         st.session_state['scraping_state'] = 'idle'

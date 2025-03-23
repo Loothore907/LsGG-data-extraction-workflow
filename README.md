@@ -1,19 +1,47 @@
-# Scrape Master
+# Loots Scraper Service
 
-A secure web scraping application with AI-powered data extraction capabilities.
+A modular data collection service for cannabis product information, designed to feed into the Loots Ganja Guide app.
 
-## Security First Setup
+## Project Structure
+
+```
+loots-scraper-service/
+├── core/                  # Shared utilities and functionality
+├── web_scraper/           # Web scraping module
+├── output/                # Output files for data service integration
+├── docker-compose.yml     # Docker configuration
+└── Dockerfile             # Container definition
+```
+
+## Modules
+
+### Web Scraper
+
+The web scraper module extracts product information from cannabis websites, including:
+
+- Product names
+- Prices
+- Categories
+- Weights/quantities
+
+### Core Functionality
+
+The core module provides shared utilities for:
+
+- Data export in standardized formats
+- Configuration management
+- Common utilities for text processing
+
+## Getting Started
 
 1. **Environment Setup**
    ```bash
    # Create and edit your .env file (NEVER commit this file)
    cp .env.example .env
    ```
-   Edit `.env` with your API keys:
-   - Supabase URL and Anon Key
-   - Any AI model API keys you plan to use
+   Edit `.env` with your API keys
 
-2. **Docker Setup** (Recommended Secure Method)
+2. **Docker Setup** (Recommended)
    ```bash
    # Build and run with Docker
    docker-compose up --build
@@ -25,11 +53,8 @@ A secure web scraping application with AI-powered data extraction capabilities.
    # Create virtual environment
    python -m venv venv
 
-   # Activate virtual environment
-   # Windows:
+   # Activate virtual environment (Windows)
    venv\Scripts\activate
-   # Mac/Linux:
-   source venv/bin/activate
 
    # Install dependencies
    pip install -r requirements.txt
@@ -37,49 +62,41 @@ A secure web scraping application with AI-powered data extraction capabilities.
    # Install playwright
    playwright install
 
-   # Run the application
-   streamlit run streamlit_app.py
+   # Run the web scraper
+   streamlit run web_scraper/app.py
    ```
+
+## Data Integration
+
+The scraped data is exported to JSON files in the `output/web_scraper/` directory with the following structure:
+
+```json
+{
+  "metadata": {
+    "source": "web_scraper",
+    "timestamp": "2025-03-22T15:30:45Z",
+    "vendor_id": "vendor_123",
+    "region": "washington"
+  },
+  "products": [
+    {
+      "name": "Product Name",
+      "price": "21.00",
+      "category": "Category",
+      "weight": "0.75",
+      "unit": "g"
+    }
+  ]
+}
+```
+
+These files can be imported into the Loots Data Service for further processing and database integration.
 
 ## Security Notes
 
 - Never commit `.env` files
 - Use Docker for isolated execution
 - Keep API keys secure and rotate them regularly
-- The application runs with minimal permissions in Docker
-
-## Database Setup
-
-1. Create a [Supabase](https://supabase.com/) account
-2. Create a new project
-3. Run the following SQL in the SQL Editor:
-   ```sql
-   CREATE TABLE IF NOT EXISTS scraped_data (
-     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-     unique_name TEXT NOT NULL,
-     url TEXT,
-     raw_data JSONB,
-     formatted_data JSONB,
-     pagination_data JSONB,
-     created_at TIMESTAMPTZ DEFAULT NOW()
-   );
-   ```
-
-## Features
-
-- Secure containerized execution
-- AI-powered data extraction
-- Pagination support
-- Structured data storage
-- Modern web interface
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
 
 ## License
 
