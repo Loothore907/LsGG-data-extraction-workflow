@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 from dotenv import load_dotenv
-from supabase import create_client
 from .assets import MODELS_USED
 
 load_dotenv()
@@ -16,22 +15,18 @@ def get_api_key(model):
     env_var_name = list(MODELS_USED[model])[0]  # e.g., "GEMINI_API_KEY"
     return st.session_state.get(env_var_name) or os.getenv(env_var_name)
 
+# The following functions are no longer needed since we migrated to file-based storage
+# They're replaced with empty implementations to prevent import errors
 def get_supabase_client():
-    """Returns a Supabase client if credentials exist, otherwise shows a guide."""
-    supabase_url = st.session_state.get('SUPABASE_URL') or os.getenv('SUPABASE_URL')
-    supabase_key = st.session_state.get('SUPABASE_ANON_KEY') or os.getenv('SUPABASE_ANON_KEY')
-
-    if not supabase_url or not supabase_key or "your-supabase-url-here" in supabase_url:
-        return None
-
-    return create_client(supabase_url, supabase_key)
+    """
+    This function is deprecated. We now use file-based storage instead of Supabase.
+    Returns None to indicate Supabase is not available.
+    """
+    return None
 
 def get_supabase_admin_client():
-    """Returns a Supabase client using service role key to bypass RLS."""
-    supabase_url = st.session_state.get('SUPABASE_URL') or os.getenv('SUPABASE_URL')
-    supabase_service_key = st.session_state.get('SUPABASE_SERVICE_KEY') or os.getenv('SUPABASE_SERVICE_KEY')
-    
-    if not supabase_url or not supabase_service_key or "your-supabase-url-here" in supabase_url:
-        return None
-        
-    return create_client(supabase_url, supabase_service_key)
+    """
+    This function is deprecated. We now use file-based storage instead of Supabase.
+    Returns None to indicate Supabase is not available.
+    """
+    return None

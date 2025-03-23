@@ -7,6 +7,7 @@ services:
       - "8501:8501"
     volumes:
       - .env:/app/.env:ro
+      - ./output:/app/output
     environment:
       - STREAMLIT_SERVER_ADDRESS=0.0.0.0
     security_opt:

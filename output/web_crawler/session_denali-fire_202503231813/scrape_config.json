@@ -1,0 +1,17 @@
+{
+  "urls": [
+    "https://weedmaps.com/brands/denali-fire/products"
+  ],
+  "fields": [
+    "Product Name",
+    "Price"
+  ],
+  "model": "gemini/gemini-1.5-flash",
+  "use_pagination": true,
+  "pagination_details": "",
+  "scrape_completed": true,
+  "scrape_timestamp": "2025-03-23T18:15:11.030467",
+  "total_cost": 4.0575e-05,
+  "total_input_tokens": 471,
+  "total_output_tokens": 12
+}

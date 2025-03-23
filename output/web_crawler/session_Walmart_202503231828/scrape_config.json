@@ -1,0 +1,12 @@
+{
+  "urls": [
+    "https://www.amazon.com/s?k=Outdoor+Faux+Plants&crid=3U41BVH65OEQR&sprefix=%2Caps%2C184&ref=nb_sb_ss_sx-trend-t9-trend-v2-searches_6_0"
+  ],
+  "fields": [
+    "Product Name",
+    "Price"
+  ],
+  "model": "gemini/gemini-1.5-flash",
+  "use_pagination": true,
+  "pagination_details": ""
+}
