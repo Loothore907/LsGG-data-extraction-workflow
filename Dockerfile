@@ -1,25 +1,9 @@
-# Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1
-
-# Create a non-root user
-RUN useradd -m -s /bin/bash appuser
-
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies
+# Install system dependencies for Playwright
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install playwright dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
     libglib2.0-0 \
     libnss3 \
     libnspr4 \
@@ -42,29 +26,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better cache usage
-COPY requirements.txt .
+WORKDIR /app
 
-# Install Python dependencies
+# Copy requirements and install
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install playwright browsers
+# Install Playwright browser
 RUN playwright install chromium
 
-# Copy the application code
+# Copy application code
 COPY . .
 
-# Change ownership of the app directory to appuser
-RUN chown -R appuser:appuser /app
-
-# Switch to non-root user
-USER appuser
-
-# Expose Streamlit port
+# Expose port for Streamlit
 EXPOSE 8501
 
-# Set healthcheck
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
-
-# Run the application
-CMD ["streamlit", "run", "streamlit_app.py"] 
+# Run the app
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

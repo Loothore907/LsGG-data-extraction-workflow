@@ -25,3 +25,13 @@ def get_supabase_client():
         return None
 
     return create_client(supabase_url, supabase_key)
+
+def get_supabase_admin_client():
+    """Returns a Supabase client using service role key to bypass RLS."""
+    supabase_url = st.session_state.get('SUPABASE_URL') or os.getenv('SUPABASE_URL')
+    supabase_service_key = st.session_state.get('SUPABASE_SERVICE_KEY') or os.getenv('SUPABASE_SERVICE_KEY')
+    
+    if not supabase_url or not supabase_service_key or "your-supabase-url-here" in supabase_url:
+        return None
+        
+    return create_client(supabase_url, supabase_service_key)

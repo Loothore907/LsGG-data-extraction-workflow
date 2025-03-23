@@ -1,4 +1,24 @@
 # streamlit_app.py
+# Add these lines at the very top of streamlit_app.py
+import asyncio
+import nest_asyncio
+
+# Fix for the asyncio event loop error in Streamlit
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+nest_asyncio.apply()
+
+# Continue with your existing imports and code
+# Now import streamlit and other modules
+import streamlit as st
+import os
+
+# Import your modules last
+# from scraper import scrape_urls - don't change your other imports, just make sure they come after the event loop setup
 
 import streamlit as st
 from streamlit_tags import st_tags_sidebar
@@ -7,6 +27,10 @@ import json
 import re
 import sys
 import asyncio
+import nest_asyncio
+import threading
+# Import our new asyncio helper
+from asyncio_helper import ensure_event_loop
 # ---local imports---
 from scraper import scrape_urls
 from pagination import paginate_urls
@@ -14,11 +38,8 @@ from markdown import fetch_and_store_markdowns
 from assets import MODELS_USED
 from api_management import get_supabase_client
 
-# Only use WindowsProactorEventLoopPolicy on Windows
-if sys.platform.startswith("win"):
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-
-
+# Apply the helper function to ensure we have an event loop
+ensure_event_loop()
 
 # Initialize Streamlit app
 st.set_page_config(page_title="Universal Web Scraper", page_icon="🦑")
@@ -55,7 +76,7 @@ if supabase==None:
     SUPABASE_ANON_KEY=your_supabase_anon_key_here
     ```
 
-    6. **Restart the project** close everything and reopen it, and you’re good to go! 🚀
+    6. **Restart the project** close everything and reopen it, and you're good to go! 🚀
     """)
 
 st.title("Universal Web Scraper 🦑")
@@ -113,7 +134,7 @@ with st.sidebar.container():
             st.session_state["urls_splitted"] = []
             st.rerun()
 
-    # Show the URLs in an expander, each as a styled “bubble”
+    # Show the URLs in an expander, each as a styled "bubble"
     with st.expander("Added URLs", expanded=True):
         if st.session_state["urls_splitted"]:
             bubble_html = ""

@@ -8,3 +8,4 @@ supabase
 streamlit
 streamlit-tags
 crawl4ai
+nest_asyncio==1.5.6

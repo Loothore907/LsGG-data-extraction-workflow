@@ -5,6 +5,7 @@ from typing import List
 from api_management import get_supabase_client
 from utils import generate_unique_name
 from crawl4ai import AsyncWebCrawler
+from asyncio_helper import ensure_event_loop
 
 supabase = get_supabase_client()
 
@@ -13,6 +14,8 @@ async def get_fit_markdown_async(url: str) -> str:
     Async function using crawl4ai's AsyncWebCrawler to produce the regular raw markdown.
     (Reverting from the 'fit' approach back to normal.)
     """
+    # Ensure event loop exists in this thread
+    ensure_event_loop()
 
     async with AsyncWebCrawler() as crawler:
         result = await crawler.arun(url=url)
@@ -26,12 +29,13 @@ def fetch_fit_markdown(url: str) -> str:
     """
     Synchronous wrapper around get_fit_markdown_async().
     """
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    # Use ensure_event_loop instead of creating a new one
+    loop = ensure_event_loop()
     try:
         return loop.run_until_complete(get_fit_markdown_async(url))
     finally:
-        loop.close()
+        # Don't close the loop, as it might be used elsewhere
+        pass
 
 def read_raw_data(unique_name: str) -> str:
     """
